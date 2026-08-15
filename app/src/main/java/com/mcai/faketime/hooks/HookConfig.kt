@@ -39,7 +39,7 @@ class HookConfig(private val packageName: String) {
             enabled = p.getBoolean("enabled", true)
             offsetMillis = p.getLong("offset_millis", 0L)
             val realTime = p.getStringSet("real_time_apps", emptySet())
-            if (packageName in realTime) offsetMillis = 0L
+            if (realTime != null && packageName in realTime) offsetMillis = 0L
             prefs = p
         } catch (_: Throwable) {
             // Config unreadable -> module behaves as off (real time).
