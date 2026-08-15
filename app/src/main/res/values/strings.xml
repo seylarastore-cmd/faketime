@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FakeTime</string>
+    <string name="tab_clock">Clock</string>
+    <string name="tab_apps">Per-App</string>
+    <string name="master_switch">Enable fake time</string>
+    <string name="offset_label">Offset</string>
+    <string name="preview_label">Preview</string>
+    <string name="now_real">Now (real)</string>
+    <string name="now_fake">Now (faked)</string>
+    <string name="btn_apply">Apply</string>
+    <string name="btn_clear">Reset</string>
+    <string name="days">days</string>
+    <string name="hours">hours</string>
+    <string name="minutes">min</string>
+    <string name="apps_hint">Force real time for specific apps</string>
+    <string name="real_time">Real time</string>
+    <string name="offset_days">Offset days</string>
+    <string name="offset_hours">Offset hours</string>
+    <string name="offset_minutes">Offset minutes</string>
+</resources>
