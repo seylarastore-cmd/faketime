@@ -1,6 +1,5 @@
 package com.mcai.faketime.ui
 
-import android.content.pm.ApplicationInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,10 +44,14 @@ class AppsFragment : Fragment() {
         val pm = ctx.packageManager
         val realTime = Config.realTimeApps(ctx)
         val apps = pm.getInstalledApplications(0)
-            .filter { (it.flags and ApplicationInfo.FLAG_SYSTEM) == 0 }
             .mapNotNull {
                 try {
-                    AppEntry(it.packageName, pm.getApplicationLabel(it).toString(), it.packageName in realTime)
+                    val label = pm.getApplicationLabel(it).toString()
+                    AppEntry(
+                        packageName = it.packageName,
+                        label = label,
+                        forceRealTime = it.packageName in realTime,
+                    )
                 } catch (_: Throwable) {
                     null
                 }

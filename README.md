@@ -33,9 +33,31 @@ The static-offset model is the *most* consistent approach (nothing drifts), but 
    adb install -r app-debug.apk
    ```
 2. Open **LSPosed Manager → Modules**, enable **FakeTime**.
-3. **Scope**: select *System Framework* plus your target apps (or simply select-all) — this is what makes `handleLoadPackage` fire for the app processes you want faked (whole-device).
-4. Tap **Reboot** in LSPosed, or reboot the device.
+3. **Scope is the #1 reason it "does nothing"**: LSPosed only injects the module into processes you explicitly scope. To fake time for an app, that app MUST be checked in the module's scope list inside LSPosed Manager (Modules → FakeTime → scope icon). "System Framework" alone does NOT cover arbitrary apps.
+   - Pick the app you want to test (e.g. a calendar/file manager) and enable FakeTime for it.
+   - For whole-device: check System Framework **plus every app** you care about.
+4. Tap **Reboot** in LSPosed (or `adb reboot`) — scope changes require a reboot.
 5. Open the **FakeTime** app, set an offset (e.g. +2 days), hit **Apply**.
+6. **Now force-stop and reopen the target app**, then look at its dates.
+
+> Important — what "works" means: FakeTime does NOT change the device's real clock (Settings → Date & Time stays correct). It fakes time only **inside the processes LSPosed scopes to it**. Check the clock in the *target app*, not in Settings.
+
+## Verifying it actually works (5-minute checklist)
+
+1. **Is the module loaded?** Open LSPosed Manager → Logs, filter `FakeTime`. You should see lines like:
+   ```
+   [FakeTime] loaded into com.example.target, registering hooks
+   [FakeTime] hooked System.currentTimeMillis
+   ```
+   If you see `skipping excluded process` for your target app, you scoped a system-critical app — pick a normal app instead.
+   If you see nothing at all, the module isn't enabled/scoped, or you haven't rebooted.
+
+2. **Is the offset read?** With offset +2 days applied, in the target app:
+   - `System.currentTimeMillis()` → today + 2 days
+   - `Date()`, `Calendar`, `Instant.now()`, `LocalDateTime.now()` → shifted
+   - Elapsed timers still fire on correct real durations
+
+3. **Per-App tab**: lists ALL apps now (including system apps). Toggle "Real time" for any app you want exempted.
 
 > Hard safety exclusions (never hooked) are built in: `system_server`, `SystemUI`, LSPosed manager, and the FakeTime app itself. This prevents boot/sync breakage. Per-app "force real time" overrides in the Per-App tab act at runtime.
 

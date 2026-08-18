@@ -42,14 +42,14 @@ object Config {
     fun isEnabled(context: Context): Boolean = appPrefs(context).getBoolean(KEY_ENABLED, true)
 
     fun setEnabled(context: Context, enabled: Boolean) {
-        appPrefs(context).edit().putBoolean(KEY_ENABLED, enabled).apply()
+        commit(context) { it.putBoolean(KEY_ENABLED, enabled) }
     }
 
     fun offsetMillis(context: Context): Long =
         appPrefs(context).getLong(KEY_OFFSET_MILLIS, 0L)
 
     fun setOffsetMillis(context: Context, millis: Long) {
-        appPrefs(context).edit().putLong(KEY_OFFSET_MILLIS, millis).apply()
+        commit(context) { it.putLong(KEY_OFFSET_MILLIS, millis) }
     }
 
     fun realTimeApps(context: Context): Set<String> =
@@ -60,6 +60,22 @@ object Config {
             ?: emptySet()
         val updated = current.toMutableSet()
         if (real) updated.add(packageName) else updated.remove(packageName)
-        appPrefs(context).edit().putStringSet(KEY_REAL_TIME_APPS, updated).apply()
+        commit(context) { it.putStringSet(KEY_REAL_TIME_APPS, updated) }
+    }
+
+    /**
+     * Write synchronously (commit) so the hooks in other processes can read
+     * the file immediately, and chmod it world-readable so LSPosed's
+     * XSharedPreferences can open it cross-process.
+     */
+    private fun commit(context: Context, edit: (SharedPreferences.Editor) -> Unit) {
+        val prefs = appPrefs(context)
+        edit(prefs.edit()).commit()
+        try {
+            val file = java.io.File(context.applicationInfo.dataDir, "shared_prefs/$PREFS_NAME.xml")
+            file.setReadable(true, false)
+            file.setWritable(true, false)
+            file.setExecutable(false, false)
+        } catch (_: Throwable) {}
     }
 }

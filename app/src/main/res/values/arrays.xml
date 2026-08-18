@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--
-      Hint for the LSPosed manager. Scoping "System Framework" (android) makes
-      handleLoadPackage fire for every app process, which is what enables
-      whole-device fake time. The runtime SAFETY_EXCLUDE list in Config still
-      skips system_server / SystemUI / our own app.
+      Hint shown in the LSPosed manager. Scoping is done per-app by the user:
+      LSPosed only injects this module into processes the user checks in
+      Modules -> FakeTime -> scope. This array just preselects System
+      Framework in the manager; it does NOT auto-scope every app.
     -->
     <array name="xposed_scope">
         <item>android</item>

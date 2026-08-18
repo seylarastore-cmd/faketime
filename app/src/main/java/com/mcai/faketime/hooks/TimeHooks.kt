@@ -79,6 +79,7 @@ object TimeHooks {
             "currentTimeMillis",
             systemTimeHook(config),
         )
+        XposedBridge.log("[FakeTime] hooked System.currentTimeMillis")
     }
 
     private fun hookSystemClock(config: HookConfig) {
