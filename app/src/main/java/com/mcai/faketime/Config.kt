@@ -70,7 +70,9 @@ object Config {
      */
     private fun commit(context: Context, edit: (SharedPreferences.Editor) -> Unit) {
         val prefs = appPrefs(context)
-        edit(prefs.edit()).commit()
+        val editor = prefs.edit()
+        edit(editor)
+        editor.commit()
         try {
             val file = java.io.File(context.applicationInfo.dataDir, "shared_prefs/$PREFS_NAME.xml")
             file.setReadable(true, false)
